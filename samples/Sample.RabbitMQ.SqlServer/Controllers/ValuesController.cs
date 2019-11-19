@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Data;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
 using DotNetCore.CAP;
 using Microsoft.AspNetCore.Mvc;
-using MySql.Data.MySqlClient;
 
 namespace Sample.RabbitMQ.SqlServer.Controllers
 {
@@ -29,12 +29,12 @@ namespace Sample.RabbitMQ.SqlServer.Controllers
         [Route("~/adonet/transaction")]
         public IActionResult AdonetWithTransaction()
         {
-            using (var connection = new MySqlConnection(AppDbContext.ConnectionString))
+            using (var connection = new SqlConnection(AppDbContext.ConnectionString))
             {
                 using (var transaction = connection.BeginTransaction(_capBus, autoCommit: false))
                 {
                     //your business code
-                    connection.Execute("insert into test(name) values('test')", transaction: (IDbTransaction)transaction.DbTransaction);
+                    connection.Execute("insert into test(name) values('test')", transaction: transaction);
 
                     for (int i = 0; i < 5; i++)
                     {
